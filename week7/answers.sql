@@ -5,7 +5,7 @@ USE destruction;
 CREATE TABLE players (
   player_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
   first_name VARCHAR(30),
-  last_name VARCHAR(30)
+  last_name VARCHAR(30),
   email TEXT
 );
 
