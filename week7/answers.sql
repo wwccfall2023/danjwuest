@@ -99,7 +99,7 @@ CREATE TABLE equipped (
       ON DELETE CASCADE,
   CONSTRAINT equipped_fk_items
     FOREIGN KEY (item_id)
-    REFERENCES teams (item_id)
+    REFERENCES items (item_id)
       ON UPDATE CASCADE
       ON DELETE CASCADE
 );
