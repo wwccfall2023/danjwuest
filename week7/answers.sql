@@ -148,7 +148,6 @@ CREATE OR REPLACE VIEW team_items AS
 			INNER JOIN items ON items.item_id = equipped.item_id
 			INNER JOIN team_members tm ON c.character_id = tm.character_id
 			INNER JOIN teams t ON tm.team_id = t.team_id
-			GROUP BY items.item_id
 			ORDER BY item_name;
 
 
