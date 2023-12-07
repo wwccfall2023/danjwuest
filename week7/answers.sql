@@ -104,3 +104,18 @@ CREATE TABLE equipped (
       ON DELETE CASCADE
 );
 
+CREATE VIEW AS character_items
+  SELECT 
+    c.character_id, 
+    c.name AS character_name, 
+    items.name AS item_name, 
+    items.armor AS armor,
+    items.damage AS damage
+    FROM characters c
+      LEFT OUTER JOIN inventory ON c.character_id = inventory.character_id
+      LEFT OUTER JOIN equipped ON c.character_id = equipped.character_id
+      INNER JOIN items ON items.item_id = inventory.item_id
+      INNER JOIN items ON items.item_id = equipped.item_id;
+
+
+
