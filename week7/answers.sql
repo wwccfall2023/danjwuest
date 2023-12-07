@@ -123,6 +123,7 @@ CREATE OR REPLACE VIEW character_items AS
           FROM equipped
         		INNER JOIN characters c ON c.character_id = equipped.character_id
             INNER JOIN items ON items.item_id = equipped.item_id
+            ORDER BY item_name;
     
 
 
