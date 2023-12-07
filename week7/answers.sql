@@ -104,7 +104,7 @@ CREATE TABLE equipped (
       ON DELETE CASCADE
 );
 
-CREATE VIEW AS character_items
+CREATE OR REPLACE VIEW AS character_items
   SELECT 
     c.character_id, 
     c.name AS character_name, 
