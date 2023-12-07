@@ -59,7 +59,7 @@ CREATE TABLE team_members (
       ON DELETE CASCADE,
   CONSTRAINT team_members_fk_characters
     FOREIGN KEY (character_id)
-    REFERENCES teams (character_id)
+    REFERENCES characters (character_id)
       ON UPDATE CASCADE
       ON DELETE CASCADE
 );
@@ -83,7 +83,7 @@ CREATE TABLE inventory (
       ON DELETE CASCADE,
   CONSTRAINT inventory_fk_items
     FOREIGN KEY (item_id)
-    REFERENCES teams (item_id)
+    REFERENCES items (item_id)
       ON UPDATE CASCADE
       ON DELETE CASCADE
 );
