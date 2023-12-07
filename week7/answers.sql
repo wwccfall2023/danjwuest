@@ -133,6 +133,7 @@ CREATE OR REPLACE VIEW team_items AS
 		ci.armor AS armor,
     ci.damage AS damage
       FROM character_items ci
-		  INNER JOIN teams t ON ci.character_id = teams.character_id;
+		  INNER JOIN team_members tm ON ci.character_id = team_members.character_id
+        INNER JOIN teams t ON tm.team_id = t.team_id;
 
 
