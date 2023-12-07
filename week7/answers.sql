@@ -106,7 +106,7 @@ CREATE TABLE equipped (
 
 CREATE OR REPLACE VIEW character_items AS
   SELECT 
-    c.character_id, 
+    c.character_id AS character_id, 
     c.name AS character_name, 
     items.name AS item_name, 
     items.armor AS armor,
@@ -125,6 +125,14 @@ CREATE OR REPLACE VIEW character_items AS
             INNER JOIN items ON items.item_id = equipped.item_id
             ORDER BY item_name;
     
-
+CREATE OR REPLACE VIEW team_items AS
+	SELECT
+		t.team_id AS team_id,
+    t.name AS team_name,
+    ci.item_name AS item_name,
+		ci.armor AS armor,
+    ci.damage AS damage
+      FROM character_items ci
+		  INNER JOIN teams t ON ci.character_id = teams.character_id;
 
 
