@@ -226,7 +226,10 @@ CREATE PROCEDURE attack(id_of_character_being_attacked INT, id_of_equipped_item_
     DECLARE current_health INT;
     SELECT armor_total(id_of_character_being_attacked) INTO total_armor;
     
-    SELECT i.damage INTO item_damage FROM items i WHERE i.item_id = id_of_equipped_item_used_for_attack;
+    SELECT i.damage INTO item_damage 
+		FROM equipped e 
+			INNER JOIN items i ON e.item_id = i.item_id
+        WHERE e.item_id = id_of_equipped_item_used_for_attack;
     
     IF item_damage > total_armor THEN
 		SELECT health INTO current_health FROM character_stats cs 
