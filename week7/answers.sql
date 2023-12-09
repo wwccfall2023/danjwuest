@@ -167,3 +167,49 @@ BEGIN
 		RETURN armor_sum;
 END;;
 DELIMITER ;
+
+DELIMITER ;;
+-- I got a little stumped here, so I looked up ways to save data into individual variables.
+-- Found this on stack overflow:
+-- https://stackoverflow.com/questions/4823880/sql-server-select-into-variable
+-- Then I looked at the CURSOR lesson again and realized I didn't need to do that, but
+-- I thought I should include the link anyway.
+CREATE PROCEDURE equip(selected_inventory_id INT)
+	BEGIN
+    DECLARE equipping_inventory_id INT;
+    DECLARE equipping_character_id INT;
+    DECLARE equipping_item_id INT;
+    
+	SELECT * INTO equipping_inventory_id, equipping_character_id, equipping_item_id
+			FROM inventory i 
+			WHERE i.inventory_id = selected_inventory_id;
+            
+	INSERT INTO 
+		equipped (character_id, item_id) 
+        VALUES
+			(equipping_character_id, equipping_item_id);
+	
+    DELETE FROM inventory WHERE inventory_id = selected_inventory_id;
+	END;;
+DELIMITER ;
+
+
+DELIMITER ;;
+CREATE PROCEDURE unequip(selected_equipped_id INT)
+	BEGIN
+    DECLARE unequipping_equipped_id INT;
+    DECLARE unequipping_character_id INT;
+    DECLARE unequipping_item_id INT;
+    
+	SELECT * INTO unequipping_equipped_id, unequipping_character_id, unequipping_item_id
+			FROM equipped 
+			WHERE equipped.equipped_id = selected_equipped_id;
+            
+	INSERT INTO 
+		inventory (character_id, item_id) 
+        VALUES
+			(unequipping_character_id, unequipping_item_id);
+	
+    DELETE FROM equipped WHERE equipped_id = selected_equipped_id;
+	END;;
+DELIMITER ;
