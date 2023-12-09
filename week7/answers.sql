@@ -223,22 +223,21 @@ CREATE PROCEDURE attack(id_of_character_being_attacked INT, id_of_equipped_item_
 	BEGIN
     DECLARE total_armor INT;
     DECLARE item_damage INT;
-    DECLARE leftover_health INT;
-    -- Had trouble assigning the function output to a variable, found this:
-    -- https://stackoverflow.com/questions/6988892/assigning-function-result-to-sql-variable-and-displaying
-    SELECT total_armor = armor_total(id_of_character_being_attacked);
+    DECLARE current_health INT;
+    SELECT armor_total(id_of_character_being_attacked) INTO total_armor;
     
     SELECT i.damage INTO item_damage FROM items i WHERE i.item_id = id_of_equipped_item_used_for_attack;
     
     IF item_damage > total_armor THEN
-		UPDATE character_stats cs
-			SET health = health - (item_damage - total_armor)
-            WHERE cs.character_id = id_of_character_being_attacked;
-            
-		SELECT health INTO leftover_health FROM character_stats cs 
+		SELECT health INTO current_health FROM character_stats cs 
 			WHERE cs.character_id = id_of_character_being_attacked;
+		SET current_health = current_health - (item_damage - total_armor);
+		UPDATE character_stats cs
+			SET health = current_health
+            WHERE cs.character_id = id_of_character_being_attacked;
+
             
-        IF leftover_health <= 0 THEN
+        IF current_health <= 0 THEN
 			DELETE FROM characters WHERE character_id = id_of_character_being_attacked;
         END IF;
     END IF;
