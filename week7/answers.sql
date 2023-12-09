@@ -228,7 +228,7 @@ CREATE PROCEDURE attack(id_of_character_being_attacked INT, id_of_equipped_item_
     -- https://stackoverflow.com/questions/6988892/assigning-function-result-to-sql-variable-and-displaying
     SELECT total_armor = armor_total(id_of_character_being_attacked);
     
-    SELECT i.damage INTO item_damage FROM items WHERE i.item_id = id_of_equipped_item_used_for_attack;
+    SELECT i.damage INTO item_damage FROM items i WHERE i.item_id = id_of_equipped_item_used_for_attack;
     
     IF item_damage > total_armor THEN
 		UPDATE character_stats cs
