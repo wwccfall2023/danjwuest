@@ -156,15 +156,18 @@ CREATE FUNCTION armor_total(character_id INT)
 RETURNS INT UNSIGNED
 READS SQL DATA
 BEGIN
-	DECLARE armor_sum INT;
+	DECLARE equipped_armor_sum INT;
+    DECLARE armor_stat INT;
     SELECT 
-		SUM(items.armor) INTO armor_sum
+		SUM(items.armor) INTO equipped_armor_sum
 		FROM equipped e
 			INNER JOIN items ON e.item_id = items.item_id
 		WHERE 
 			e.character_id = character_id
 		GROUP BY e.character_id;
-		RETURN armor_sum;
+	SELECT armor INTO armor_stat FROM character_stats cs
+		WHERE cs.character_id = character_id;
+		RETURN equipped_armor_sum + armor_stat;
 END;;
 DELIMITER ;
 
