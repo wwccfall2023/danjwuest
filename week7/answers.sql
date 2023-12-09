@@ -34,7 +34,8 @@ CREATE TABLE winners (
 
 CREATE TABLE character_stats (
   character_id INT UNSIGNED PRIMARY KEY,
-  health INT UNSIGNED,
+-- Made health signed so it can be a negative value without breaking.
+  health INT,
   armor INT UNSIGNED,
   CONSTRAINT char_stars_fk_characters
     FOREIGN KEY (character_id)
@@ -215,4 +216,32 @@ CREATE PROCEDURE unequip(selected_equipped_id INT)
 	
     DELETE FROM equipped WHERE equipped_id = selected_equipped_id;
 	END;;
+DELIMITER ;
+
+DELIMITER ;;
+CREATE PROCEDURE attack(id_of_character_being_attacked INT, id_of_equipped_item_used_for_attack INT)
+	BEGIN
+    DECLARE total_armor INT;
+    DECLARE item_damage INT;
+    DECLARE leftover_health INT;
+    -- Had trouble assigning the function output to a variable, found this:
+    -- https://stackoverflow.com/questions/6988892/assigning-function-result-to-sql-variable-and-displaying
+    SELECT total_armor = armor_total(id_of_character_being_attacked);
+    
+    SELECT i.damage INTO item_damage FROM items WHERE i.item_id = id_of_equipped_item_used_for_attack;
+    
+    IF item_damage > total_armor THEN
+		UPDATE character_stats cs
+			SET health = health - (item_damage - total_armor)
+            WHERE cs.character_id = id_of_character_being_attacked;
+            
+		SELECT health INTO leftover_health FROM character_stats cs 
+			WHERE cs.character_id = id_of_character_being_attacked;
+            
+        IF leftover_health <= 0 THEN
+			DELETE FROM characters WHERE character_id = id_of_character_being_attacked;
+        END IF;
+    END IF;
+    
+    END;;
 DELIMITER ;
