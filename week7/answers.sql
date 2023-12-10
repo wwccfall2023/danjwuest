@@ -247,3 +247,38 @@ CREATE PROCEDURE attack(id_of_character_being_attacked INT, id_of_equipped_item_
     
     END;;
 DELIMITER ;
+
+DELIMITER ;;
+CREATE PROCEDURE set_winners(team_id INT)
+	BEGIN
+    DECLARE character_id INT;
+    DECLARE character_name VARCHAR(30);
+    DECLARE row_not_found TINYINT DEFAULT FALSE;
+    
+    DECLARE team_members_cursor CURSOR FOR
+		SELECT c.character_id, c.name 
+        FROM team_members tm
+			INNER JOIN characters c ON tm.character_id = c.character_id
+		WHERE tm.team_id = team_id;
+        
+	DECLARE CONTINUE HANDLER FOR NOT FOUND
+		SET row_not_found = TRUE;
+		
+    DELETE FROM winners;
+    
+    OPEN team_members_cursor;
+	team_member_loop : LOOP
+		FETCH team_members_cursor INTO character_id, character_name;
+        IF row_not_found THEN
+			LEAVE team_member_loop;
+		END IF;
+        
+		INSERT INTO winners
+			(character_id, name)
+		VALUES
+			(character_id, character_name);
+	END LOOP team_member_loop;
+    
+    CLOSE team_members_cursor;
+END;;
+DELIMITER ;
