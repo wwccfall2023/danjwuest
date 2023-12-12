@@ -3,18 +3,18 @@ CREATE SCHEMA destruction;
 USE destruction;
 
 CREATE TABLE players (
-  player_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-  first_name VARCHAR(30),
-  last_name VARCHAR(30),
+  player_id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  first_name VARCHAR(30) NOT NULL,
+  last_name VARCHAR(30) NOT NULL,
   email TEXT
 );
 
 CREATE TABLE characters (
-  character_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-  player_id INT UNSIGNED,
-  name VARCHAR(30),
+  character_id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  player_id INT UNSIGNED NOT NULL,
+  name VARCHAR(30) NOT NULL,
   -- Level *shouldn't* be negative, right?
-  level INT UNSIGNED,
+  level INT UNSIGNED NOT NULL,
   CONSTRAINT characters_fk_players
     FOREIGN KEY (player_id)
     REFERENCES players (player_id)
@@ -23,8 +23,8 @@ CREATE TABLE characters (
 );
 
 CREATE TABLE winners (
-  character_id INT UNSIGNED PRIMARY KEY,
-  name VARCHAR(30),
+  character_id INT UNSIGNED NOT NULL PRIMARY KEY,
+  name VARCHAR(30) NOT NULL,
   CONSTRAINT winners_fk_characters
     FOREIGN KEY (character_id)
     REFERENCES characters (character_id)
@@ -33,10 +33,10 @@ CREATE TABLE winners (
 );
 
 CREATE TABLE character_stats (
-  character_id INT UNSIGNED PRIMARY KEY,
+  character_id INT UNSIGNED NOT NULL PRIMARY KEY,
 -- Made health signed so it can be a negative value without breaking.
-  health INT,
-  armor INT UNSIGNED,
+  health INT NOT NULL,
+  armor INT UNSIGNED NOT NULL,
   CONSTRAINT char_stars_fk_characters
     FOREIGN KEY (character_id)
     REFERENCES characters (character_id)
@@ -50,9 +50,9 @@ CREATE TABLE teams (
 );
 
 CREATE TABLE team_members (
-  team_member_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-  team_id INT UNSIGNED,
-  character_id INT UNSIGNED,
+  team_member_id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  team_id INT UNSIGNED NOT NULL,
+  character_id INT UNSIGNED NOT NULL,
   CONSTRAINT team_members_fk_teams
     FOREIGN KEY (team_id)
     REFERENCES teams (team_id)
@@ -66,17 +66,17 @@ CREATE TABLE team_members (
 );
 
 CREATE TABLE items (
-  item_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-  name VARCHAR(30),
+  item_id INT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  name VARCHAR(30) NOT NULL,
   -- Leaving armor signed because armor could potentially be a negative debuff.
   armor INT,
   damage INT UNSIGNED
 );
 
 CREATE TABLE inventory (
-  inventory_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-  character_id INT UNSIGNED,
-  item_id INT UNSIGNED,
+  inventory_id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  character_id INT UNSIGNED NOT NULL,
+  item_id INT UNSIGNED NOT NULL,
   CONSTRAINT inventory_fk_characters
     FOREIGN KEY (character_id)
     REFERENCES characters (character_id)
@@ -90,9 +90,9 @@ CREATE TABLE inventory (
 );
 
 CREATE TABLE equipped (
-  equipped_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-  character_id INT UNSIGNED,
-  item_id INT UNSIGNED,
+  equipped_id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  character_id INT UNSIGNED NOT NULL,
+  item_id INT UNSIGNED NOT NULL,
   CONSTRAINT equipped_fk_characters
     FOREIGN KEY (character_id)
     REFERENCES characters (character_id)
@@ -173,18 +173,12 @@ END;;
 DELIMITER ;
 
 DELIMITER ;;
--- I got a little stumped here, so I looked up ways to save data into individual variables.
--- Found this on stack overflow:
--- https://stackoverflow.com/questions/4823880/sql-server-select-into-variable
--- Then I looked at the CURSOR lesson again and realized I didn't need to do that, but
--- I thought I should include the link anyway.
 CREATE PROCEDURE equip(selected_inventory_id INT)
 	BEGIN
-    DECLARE equipping_inventory_id INT;
     DECLARE equipping_character_id INT;
     DECLARE equipping_item_id INT;
     
-	SELECT * INTO equipping_inventory_id, equipping_character_id, equipping_item_id
+	SELECT i.character_id, i.item_id INTO equipping_character_id, equipping_item_id
 			FROM inventory i 
 			WHERE i.inventory_id = selected_inventory_id;
             
@@ -201,11 +195,10 @@ DELIMITER ;
 DELIMITER ;;
 CREATE PROCEDURE unequip(selected_equipped_id INT)
 	BEGIN
-    DECLARE unequipping_equipped_id INT;
     DECLARE unequipping_character_id INT;
     DECLARE unequipping_item_id INT;
     
-	SELECT * INTO unequipping_equipped_id, unequipping_character_id, unequipping_item_id
+	SELECT character_id, item_id INTO unequipping_character_id, unequipping_item_id
 			FROM equipped 
 			WHERE equipped.equipped_id = selected_equipped_id;
             
@@ -234,14 +227,13 @@ CREATE PROCEDURE attack(id_of_character_being_attacked INT, id_of_equipped_item_
     IF item_damage > total_armor THEN
 		SELECT health INTO current_health FROM character_stats cs 
 			WHERE cs.character_id = id_of_character_being_attacked;
-		SET current_health = current_health - (item_damage - total_armor);
-		UPDATE character_stats cs
-			SET health = current_health
-            WHERE cs.character_id = id_of_character_being_attacked;
-
-            
+		SET current_health = current_health - (item_damage - total_armor);  
         IF current_health <= 0 THEN
 			DELETE FROM characters WHERE character_id = id_of_character_being_attacked;
+	ELSE
+		UPDATE character_stats cs
+			SET health = current_health
+			WHERE cs.character_id = id_of_character_being_attacked;
         END IF;
     END IF;
     
