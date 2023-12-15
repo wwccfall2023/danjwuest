@@ -145,21 +145,8 @@ CREATE OR REPLACE VIEW notification_posts AS
 DELIMITER ;;
 CREATE PROCEDURE add_post(user_id INT, content TEXT)
 	BEGIN
-		INSERT INTO posts (user_id, content)
-			VALUES (user_id, content);
-	END;;
-
--- I split this into procedure and trigger, because I don't know how accurate
--- the LAST_INSERT_ID() method thing is, so instead of checking the post ID each time it is made,
--- I just have another trigger for each post that will always have the right information, because it is
--- exactly referencing the new post that triggered the TRIGGER.
--- There is a possibility for duplicate notifications here, but only if a new user
--- somehow makes a friend before the join notification is sent.
-CREATE TRIGGER post_notify_friends
-	AFTER INSERT ON posts
-	FOR EACH ROW
-	BEGIN
 		DECLARE current_friend_id INT;
+        DECLARE new_post_id INT;
 		DECLARE row_not_found TINYINT DEFAULT FALSE;
         
 		DECLARE friends_cursor CURSOR FOR
@@ -170,6 +157,12 @@ CREATE TRIGGER post_notify_friends
 		DECLARE CONTINUE HANDLER FOR NOT FOUND
 			SET row_not_found = TRUE;
             
+		INSERT INTO posts (user_id, content)
+			VALUES (user_id, content);
+            
+		SET new_post_id = LAST_INSERT_ID();
+        
+            
 		OPEN friends_cursor;
 			friend_loop : LOOP
 				FETCH friends_cursor INTO current_friend_id;
@@ -179,10 +172,11 @@ CREATE TRIGGER post_notify_friends
 					LEAVE friend_loop;
 				END IF;
 				
-				INSERT INTO notifications (user_id, post_id) VALUES (current_friend_id, NEW.post_id);
+				INSERT INTO notifications (user_id, post_id) VALUES (current_friend_id, new_post_id);
 			
 			END LOOP friend_loop;
 		CLOSE friends_cursor;
-
+        
+        
 	END;;
 DELIMITER ;
