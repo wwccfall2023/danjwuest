@@ -156,7 +156,7 @@ CREATE PROCEDURE add_post(user_id INT, content TEXT)
 -- There is a possibility for duplicate notifications here, but only if a new user
 -- somehow makes a friend before the join notification is sent.
 CREATE TRIGGER post_notify_friends
-	AFTER UPDATE ON posts
+	AFTER INSERT ON posts
 	FOR EACH ROW
 	BEGIN
 		DECLARE current_friend_id INT;
