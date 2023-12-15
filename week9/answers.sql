@@ -107,7 +107,7 @@ BEGIN
 	-- https://stackoverflow.com/questions/17754188/how-to-concatenate-variables-into-sql-strings
 	-- Then instead used normal concatenation instead:
 	-- https://www.w3schools.com/sql/func_sqlserver_concat.asp
-	INSERT INTO posts (user_id, content) VALUES (NEW.user_id, CONCAT(NEW.first_name,' ',NEW.last_name, 'just joined!'));
+	INSERT INTO posts (user_id, content) VALUES (NEW.user_id, CONCAT(NEW.first_name,' ',NEW.last_name, ' just joined!'));
     
     -- Found a way to get the ID of the last insert's auto increment:
     -- https://docs.oracle.com/cd/E17952_01/connector-odbc-en/connector-odbc-usagenotes-functionality-last-insert-id.html#:~:text=To%20obtain%20the%20value%20immediately,obtain%20the%20auto%2Dincrement%20value.
