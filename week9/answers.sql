@@ -147,7 +147,7 @@ CREATE PROCEDURE add_post(user_id INT, content TEXT)
 	BEGIN
 		INSERT INTO posts (user_id, content)
 			VALUES (user_id, content);
-	END;
+	END;;
 
 -- I split this into procedure and trigger, because I don't know how accurate
 -- the LAST_INSERT_ID() method thing is, so instead of checking the post ID each time it is made,
