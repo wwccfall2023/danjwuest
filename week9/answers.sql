@@ -151,8 +151,8 @@ CREATE PROCEDURE add_post(user_id INT, content TEXT)
         
 		DECLARE friends_cursor CURSOR FOR
 			SELECT friend_id
-				FROM friends
-					WHERE user_id = NEW.user_id;
+				FROM friends f
+					WHERE f.user_id = user_id;
 	
 		DECLARE CONTINUE HANDLER FOR NOT FOUND
 			SET row_not_found = TRUE;
