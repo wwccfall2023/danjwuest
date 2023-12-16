@@ -186,8 +186,8 @@ CREATE EVENT session_cleanup
 	ON SCHEDULE EVERY 2 SECOND
     DO
     BEGIN
-		-- Looked up how to add time to a datetime:
-		-- https://stackoverflow.com/questions/18518290/how-to-add-hours-to-current-date-in-sql-server
-		DELETE FROM sessions WHERE DATEADD(HOUR, 2, updated_on) < CURRENT_TIMESTAMP;
+		-- Looked up how to calculate a datetime difference:
+		-- https://www.w3schools.com/sql/func_mysql_timediff.asp
+		DELETE FROM sessions WHERE TIMEDIFF(CURRENT_TIMESTAMP, update_on) > '02:00:00';
     END;;
 DELIMITER ;
