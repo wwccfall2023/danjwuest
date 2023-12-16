@@ -183,7 +183,7 @@ DELIMITER ;
 
 DELIMITER ;;
 CREATE EVENT session_cleanup
-	ON SCHEDULE EVERY 10 SECOND
+	ON SCHEDULE EVERY 2 SECOND
     DO
     BEGIN
 		-- Looked up how to add time to a datetime:
