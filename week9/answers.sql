@@ -180,3 +180,14 @@ CREATE PROCEDURE add_post(user_id INT, content TEXT)
         
 	END;;
 DELIMITER ;
+
+DELIMITER ;;
+CREATE EVENT session_cleanup
+	ON SCHEDULE EVERY 10 SECOND
+    DO
+    BEGIN
+		-- Looked up how to add time to a datetime:
+		-- https://stackoverflow.com/questions/18518290/how-to-add-hours-to-current-date-in-sql-server
+		DELETE FROM sessions WHERE DATEADD(HOUR, 2, updated_on) < CURRENT_TIMESTAMP;
+    END;;
+DELIMITER ;
