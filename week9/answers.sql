@@ -183,11 +183,11 @@ DELIMITER ;
 
 DELIMITER ;;
 CREATE EVENT session_cleanup
-	ON SCHEDULE EVERY 2 SECOND
+	ON SCHEDULE EVERY 10 SECOND
     DO
     BEGIN
 		-- Looked up how to calculate a datetime difference:
 		-- https://www.w3schools.com/sql/func_mysql_timediff.asp
-		DELETE FROM sessions WHERE TIMEDIFF(CURRENT_TIMESTAMP, update_on) > '02:00:00';
+		DELETE FROM sessions WHERE TIMEDIFF(CURRENT_TIMESTAMP, updated_on) > '02:00:00';
     END;;
 DELIMITER ;
